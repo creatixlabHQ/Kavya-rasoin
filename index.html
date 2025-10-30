@@ -1,399 +1,433 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kavya Rasoin</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kavya Rasoin — Restaurant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
+    :root{
+      --accent:#ff6b35;
+      --dark:#0f1724;
+      --muted:#6b7280;
+      --glass: rgba(255,255,255,0.06);
+      --card: #0b1220;
+      --success:#16a34a;
     }
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial; background: linear-gradient(180deg,#071021 0%, #0b1320 100%); color:#e6eef8; margin:0; -webkit-font-smoothing:antialiased}
 
-    body {
-      background-color: #0f172a;
-      color: #fff;
-      overflow-x: hidden;
-    }
+    /* Top bar */
+    header{position:fixed; inset:0 0 auto 0; height:72px; display:flex; align-items:center; justify-content:space-between; padding:0 20px; z-index:60; backdrop-filter: blur(6px); background:linear-gradient(180deg, rgba(5,10,18,0.45), rgba(5,10,18,0.15)); border-bottom:1px solid rgba(255,255,255,0.03)}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#ff9a76);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff}
+    .brand h1{font-size:18px;margin:0}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 25px;
-      background: #1e293b;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
+    /* Right controls */
+    .controls{display:flex;align-items:center;gap:16px}
+    .icon-btn{background:transparent;border:0;padding:8px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+    .cart-btn{position:relative}
+    .count-bubble{position:absolute;right:2px;top:-6px;background:var(--accent);color:#fff;font-weight:700;font-size:12px;padding:3px 7px;border-radius:999px;border:2px solid #071022}
 
-    header h1 {
-      color: #38bdf8;
-      font-size: 1.8rem;
-    }
+    /* Hamburger (three - dash) */
+    .hamburger{width:42px;height:42px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+    .hamburger .dash{width:22px;height:3px;background:#e9f2ff;border-radius:3px;display:block;transform-origin:center;transition:all .28s ease;margin:3px 0}
 
-    .cart-icon {
-      position: relative;
-      cursor: pointer;
-    }
+    /* Side panel */
+    .side-panel{position:fixed;right:-360px;top:0;height:100vh;width:320px;background:linear-gradient(180deg,#071226, #071122);box-shadow:-14px 0 30px rgba(0,0,0,0.6);z-index:80;padding:28px;transition:right .38s cubic-bezier(.2,.9,.18,1)}
+    .side-panel.open{right:0}
+    .side-panel h3{margin:0 0 10px 0}
+    .side-panel nav{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+    .side-panel a{color:#e6eef8;text-decoration:none;padding:12px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.02);transition:transform .18s ease}
+    .side-panel a:hover{transform:translateX(-6px)}
 
-    .cart-count {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      background: #ef4444;
-      color: white;
-      border-radius: 50%;
-      padding: 2px 7px;
-      font-size: 12px;
-    }
+    /* Main hero */
+    main{padding-top:92px;max-width:1100px;margin:0 auto;padding-left:20px;padding-right:20px}
+    .hero{display:flex;gap:28px;align-items:center}
+    .hero-left{flex:1}
+    .hero-right{width:420px}
+    .badge{display:inline-block;background:linear-gradient(90deg,#072a3b,#043444);padding:6px 10px;border-radius:999px;color:#8ee0ff;font-weight:700;margin-bottom:12px}
+    .headline{font-size:34px;line-height:1.03;margin:0 0 14px 0}
+    .sub{color:var(--muted);margin-bottom:18px}
+    .cta{display:inline-flex;gap:12px}
+    .btn{background:var(--accent);border:0;padding:12px 18px;border-radius:12px;color:#071022;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(255,107,53,0.12);transition:transform .12s ease}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
 
-    /* Hamburger */
-    .menu-btn {
-      font-size: 26px;
-      cursor: pointer;
-    }
+    /* Menu grid */
+    .menu{margin-top:26px}
+    .menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,0.03);display:flex;gap:12px;align-items:center}
+    .thumb{width:92px;height:92px;border-radius:12px;background:#09202b;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#aee0ff;font-weight:700}
+    .meta{flex:1}
+    .title{font-weight:700;margin:0 0 6px 0}
+    .price{font-weight:800}
+    .price .orig{font-weight:600;color:var(--muted);text-decoration:line-through;margin-left:8px;font-size:13px}
+    .meta .desc{color:var(--muted);font-size:13px;margin-bottom:8px}
+    .card .actions{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+    .add-btn{background:linear-gradient(90deg,#22c55e,#16a34a);border:0;padding:8px 12px;border-radius:8px;color:#041016;font-weight:700;cursor:pointer}
 
-    /* Sidebar */
-    .side-panel {
-      position: fixed;
-      top: 0;
-      right: -220px;
-      width: 220px;
-      height: 100%;
-      background: #1e293b;
-      box-shadow: -3px 0 8px rgba(0,0,0,0.4);
-      transition: right 0.3s ease;
-      padding-top: 70px;
-      z-index: 2000;
-    }
-
-    .side-panel.active {
-      right: 0;
-    }
-
-    .side-panel a {
-      display: block;
-      color: white;
-      padding: 15px;
-      text-decoration: none;
-      border-bottom: 1px solid #334155;
-    }
-
-    .side-panel a:hover {
-      background: #334155;
-    }
-
-    /* Menu Section */
-    .menu-section {
-      padding: 40px 20px;
-      text-align: center;
-    }
-
-    .menu-section h2 {
-      font-size: 2rem;
-      color: #38bdf8;
-      margin-bottom: 30px;
-    }
-
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 25px;
-    }
-
-    .menu-item {
-      background: #1e293b;
-      padding: 15px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-      transition: transform 0.3s;
-    }
-
-    .menu-item:hover {
-      transform: scale(1.05);
-    }
-
-    .menu-item img {
-      width: 100%;
-      height: 180px;
-      border-radius: 10px;
-      object-fit: cover;
-      margin-bottom: 10px;
-    }
-
-    .menu-item h3 {
-      color: #fff;
-      margin-bottom: 8px;
-    }
-
-    .menu-item p {
-      color: #ccc;
-      font-size: 14px;
-      margin-bottom: 6px;
-    }
-
-    .price {
-      color: #4ade80;
-      font-weight: bold;
-    }
-
-    .old-price {
-      text-decoration: line-through;
-      color: #888;
-      margin-left: 5px;
-    }
-
-    .add-to-cart {
-      background: #22c55e;
-      color: #fff;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .add-to-cart:hover {
-      background: #16a34a;
-    }
-
-    /* Gallery Section */
-    .gallery-section {
-      padding: 40px 20px;
-      text-align: center;
-    }
-
-    .gallery-section h2 {
-      color: #38bdf8;
-      font-size: 2rem;
-      margin-bottom: 30px;
-    }
-
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-
-    .gallery-grid img {
-      width: 100%;
-      border-radius: 10px;
-      transition: transform 0.3s;
-    }
-
-    .gallery-grid img:hover {
-      transform: scale(1.08);
-    }
-
-    /* Footer */
-    footer {
-      background: #1e293b;
-      color: #fff;
-      padding: 25px 20px;
-      text-align: center;
-    }
-
-    .social-icons img {
-      width: 30px;
-      margin: 10px;
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-
-    .social-icons img:hover {
-      transform: scale(1.2);
-    }
+    /* Quantity controls when added */
+    .qty-control{display:inline-flex;border-radius:999px;background:rgba(255,255,255,0.03);align-items:center;padding:4px}
+    .qty-control button{background:transparent;border:0;color:#e6eef8;padding:6px 8px;cursor:pointer;font-weight:700}
+    .qty-control span{min-width:28px;text-align:center;font-weight:700}
 
     /* Cart Modal */
-    .cart-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 3000;
-    }
+    .cart-modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(0.96);min-width:300px;max-width:920px;width:90%;background:linear-gradient(180deg,#06101a,#071122);padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 18px 50px rgba(2,6,23,0.7);z-index:100;display:none}
+    .cart-modal.open{display:block;animation:pop .18s ease both}
+    @keyframes pop{from{opacity:0;transform:translate(-50%,-48%) scale(.96)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+    .cart-list{max-height:320px;overflow:auto;padding-right:8px}
+    .cart-item{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed rgba(255,255,255,0.02)}
 
-    .cart-content {
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 400px;
-      color: white;
-    }
+    /* Gallery */
+    .gallery{margin-top:28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+    .photo{height:140px;border-radius:12px;background:#072432;display:flex;align-items:center;justify-content:center;font-weight:700;color:#bbf0ff;overflow:hidden;position:relative}
+    .photo img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1);transition:transform .5s ease}
+    .photo:hover img{transform:scale(1.07)}
 
-    .cart-content h3 {
-      margin-bottom: 15px;
-      text-align: center;
-      color: #38bdf8;
-    }
+    /* Footer */
+    footer{margin-top:36px;padding:28px;border-top:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:16px}
+    .footer-cols{display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between}
+    .col{min-width:180px}
+    .socials{display:flex;gap:10px;margin-top:8px}
+    .socials a{width:40px;height:40px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.02);text-decoration:none}
 
-    .cart-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 8px 0;
-    }
+    /* small screens */
+    @media (max-width:760px){.hero{flex-direction:column-reverse}.hero-right{width:100%}.headline{font-size:26px}}
 
-    .cart-item button {
-      background: #ef4444;
-      border: none;
-      color: white;
-      padding: 2px 6px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+    /* subtle animations */
+    .card, .photo, .btn{transition:transform .16s ease, box-shadow .12s ease}
+    .card:hover{transform:translateY(-6px)}
 
-    .close-cart {
-      background: #38bdf8;
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 8px;
-      display: block;
-      margin: 15px auto 0;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
-
   <header>
-    <h1>Kavya Rasoin</h1>
-    <div>
-      <span class="menu-btn">&#9776;</span>
-      <span class="cart-icon">🛒<span class="cart-count">0</span></span>
+    <div class="brand">
+      <div class="logo">KR</div>
+      <div>
+        <h1>Kavya Rasoin</h1>
+        <p>Homestyle flavours • Fresh • Fast</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="icon-btn cart-btn" id="cartToggle" title="Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path d="M3 3h2l.4 2M7 13h10l4-8H5.4" stroke="#e6eef8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="10" cy="20" r="1" fill="#e6eef8"/><circle cx="18" cy="20" r="1" fill="#e6eef8"/>
+        </svg>
+        <span class="count-bubble" id="cartCount" style="display:none">0</span>
+      </button>
+
+      <div class="hamburger" id="hamburger" aria-label="menu">
+        <span class="dash" id="dash1"></span>
+        <span class="dash" id="dash2"></span>
+        <span class="dash" id="dash3"></span>
+      </div>
     </div>
   </header>
 
-  <!-- Side Panel -->
-  <div class="side-panel" id="sidePanel">
-    <a href="#menu">Menu</a>
-    <a href="#gallery">Gallery</a>
-    <a href="#contact">Contact</a>
-  </div>
+  <!-- Side panel (slides from right) -->
+  <aside class="side-panel" id="sidePanel">
+    <h3>Quick Links</h3>
+    <p style="color:var(--muted);margin:0 0 6px 0">Jump to sections or place your order</p>
+    <nav>
+      <a href="#order" class="side-link">Order Now</a>
+      <a href="#menu" class="side-link">Menu</a>
+      <a href="#gallery" class="side-link">Gallery</a>
+      <a href="#contactFooter" class="side-link">Contact</a>
+    </nav>
+  </aside>
 
-  <!-- Menu -->
-  <section class="menu-section" id="menu">
-    <h2>Our Menu</h2>
-    <div class="menu-grid">
-      <div class="menu-item">
-        <img src="https://images.unsplash.com/photo-1604908177522-040a7d2b6bd9" alt="Veg Biryani">
-        <h3>Veg Biryani</h3>
-        <p>Aromatic rice with spices and vegetables</p>
-        <p class="price">₹221 <span class="old-price">₹260</span></p>
-        <button class="add-to-cart">Add to cart</button>
+  <main>
+    <section class="hero">
+      <div class="hero-left">
+        <div class="badge">Local Favorite</div>
+        <h2 class="headline">Kavya Rasoin — Ghar jaise swaad</h2>
+        <p class="sub">Freshly prepared meals with love. Explore our menu, add to cart, and order in seconds.</p>
+        <div class="cta">
+          <button class="btn" id="orderNow">Order Now</button>
+          <button class="btn ghost" id="viewMenu">View Menu</button>
+        </div>
+
+        <!-- Menu -->
+        <section id="menu" class="menu">
+          <h3 style="margin-top:18px">Menu</h3>
+          <div class="menu-grid" id="menuGrid">
+            <!-- JS will populate menu cards -->
+          </div>
+        </section>
       </div>
 
-      <div class="menu-item">
-        <img src="https://images.unsplash.com/photo-1631515243302-fafae4f6e3d0" alt="Masala Dosa">
-        <h3>Masala Dosa</h3>
-        <p>Crispy dosa filled with spiced potato</p>
-        <p class="price">₹114 <span class="old-price">₹120</span></p>
-        <button class="add-to-cart">Add to cart</button>
+      <div class="hero-right">
+        <div style="background:linear-gradient(180deg,#052332,#04202b);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)">
+          <h4 style="margin:0 0 8px 0">Today's special</h4>
+          <div style="display:flex;gap:12px;align-items:center">
+            <div style="width:88px;height:88px;border-radius:12px;background:#072733;display:flex;align-items:center;justify-content:center;font-weight:800">DS</div>
+            <div style="flex:1">
+              <div style="font-weight:800">Dal Tadka Combo</div>
+              <div style="color:var(--muted);font-size:13px">Rice, dal, salad, chutney</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:800">₹159</div>
+              <div style="font-size:12px;color:var(--muted)">Save ₹40 today</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px;padding:14px;border-radius:12px;background:linear-gradient(180deg,#021420,#031829);border:1px solid rgba(255,255,255,0.02)">
+          <h4 style="margin:0 0 10px 0">Opening Hours</h4>
+          <p style="margin:0;color:var(--muted)">Mon - Sun: 10:00 AM — 10:00 PM</p>
+        </div>
       </div>
+    </section>
 
-      <div class="menu-item">
-        <img src="https://images.unsplash.com/photo-1627308595229-7830a5c91f9f" alt="Gulab Jamun">
-        <h3>Gulab Jamun</h3>
-        <p>Sweet syrupy dessert</p>
-        <p class="price">₹60</p>
-        <button class="add-to-cart">Add to cart</button>
+    <!-- Gallery -->
+    <section id="gallery" style="margin-top:20px">
+      <h3>Gallery</h3>
+      <div class="gallery" id="galleryGrid">
+        <!-- JS populates with placeholder images -->
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Gallery -->
-  <section class="gallery-section" id="gallery">
-    <h2>Gallery</h2>
-    <div class="gallery-grid">
-      <img src="https://images.unsplash.com/photo-1606755962773-0e62ddcc36e0" alt="Food 1">
-      <img src="https://images.unsplash.com/photo-1565958011705-44e211f16b23" alt="Food 2">
-      <img src="https://images.unsplash.com/photo-1601924582971-b9d4b2b7b3c3" alt="Food 3">
-      <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd" alt="Food 4">
-    </div>
-  </section>
+    <!-- Footer -->
+    <footer id="contactFooter">
+      <div class="footer-cols">
+        <div class="col">
+          <h4>Kavya Rasoin</h4>
+          <p style="color:var(--muted);margin-top:6px">123, Local Lane, Your City<br/>Phone: +91 91234 56789</p>
+        </div>
+        <div class="col">
+          <h4>Contact</h4>
+          <p style="color:var(--muted);margin-top:6px">Email: hello@kavyarasoin.example</p>
+          <div class="socials">
+            <a href="#" title="WhatsApp" id="whatsapp">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 12.078c0 4.97-4.03 9-9 9a8.96 8.96 0 01-3.754-.786L3 21l1.733-4.256A8.96 8.96 0 013 12.078c0-4.97 4.03-9 9-9s9 4.03 9 9z" stroke="#e6eef8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 12.5c-.1-.31-.4-.8-.86-1.2-.6-.5-1.12-.66-1.48-.85-.18-.1-.31-.12-.45-.12-.13 0-.26.01-.4.01-.22 0-.3 0-.62.36-.32.35-1 .97-1 1.5s.6 1.4 1.38 1.98c.78.58 1.35.68 1.77.56.42-.12 1.11-.58 1.26-1.06.15-.48.15-.8.1-.96z" fill="#e6eef8"/></svg>
+            </a>
+            <a href="#" title="Facebook">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 2h-3a4 4 0 00-4 4v3H8v4h3v8h4v-8h3l1-4h-4V6a1 1 0 011-1h2z" stroke="#e6eef8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a href="#" title="Twitter">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M23 3s-1 .5-2 1c-1 .5-2 .8-3 1a6 6 0 00-11 4v1C6 10 3 9 1 7c0 6 4 10 10 11v3c-3 .5-6 0-8-2 2 3 6 4 10 4 6 0 10-4 10-10v-1c.6-.4 1-1 1-2z" stroke="#e6eef8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a href="#" title="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="#e6eef8" stroke-width="1.2"/><path d="M12 8a4 4 0 100 8 4 4 0 000-8z" stroke="#e6eef8" stroke-width="1.2"/><path d="M17.5 6.5h.01" stroke="#e6eef8" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </a>
+          </div>
+        </div>
 
-  <!-- Footer -->
-  <footer id="contact">
-    <h3>Contact Us</h3>
-    <p>Kavya Rasoin Restaurant, Mumbai</p>
-    <div class="social-icons">
-      <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="Facebook">
-      <img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter">
-      <img src="https://cdn-icons-png.flaticon.com/512/733/733558.png" alt="Instagram">
-      <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp">
-    </div>
-  </footer>
+        <div class="col">
+          <h4>Quick links</h4>
+          <p style="color:var(--muted);margin-top:6px"><a href="#menu" style="color:inherit;text-decoration:underline">Menu</a> • <a href="#gallery" style="color:inherit;text-decoration:underline">Gallery</a> • <a href="#contactFooter" style="color:inherit;text-decoration:underline">Contact</a></p>
+        </div>
+      </div>
+      <div style="color:var(--muted);font-size:13px;text-align:center;opacity:0.9">© Kavya Rasoin — All rights reserved</div>
+    </footer>
+  </main>
 
   <!-- Cart Modal -->
-  <div class="cart-modal" id="cartModal">
-    <div class="cart-content">
-      <h3>Your Cart</h3>
-      <div id="cartItems"></div>
-      <button class="close-cart" onclick="closeCart()">Close</button>
+  <div class="cart-modal" id="cartModal" aria-modal="true" role="dialog">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <h3 style="margin:0">Your Cart</h3>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn ghost" id="closeCart">Close</button>
+        <button class="btn" id="checkoutBtn">Checkout</button>
+      </div>
+    </div>
+    <div class="cart-list" id="cartList">
+      <!-- items go here -->
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px">
+      <div style="color:var(--muted)">Delivery: ₹25</div>
+      <div style="font-weight:800">Total: ₹<span id="cartTotal">0</span></div>
     </div>
   </div>
 
   <script>
-    const sidePanel = document.getElementById("sidePanel");
-    document.querySelector(".menu-btn").onclick = () => {
-      sidePanel.classList.toggle("active");
-    };
+    // Sample menu data
+    const menu = [
+      {id:1,name:'Paneer Butter Masala',desc:'Creamy paneer with buttery tomato sauce',price:220,discount:20,imgText:'PB'},
+      {id:2,name:'Dal Tadka',desc:'Yellow lentils tempered with ghee',price:140,discount:10,imgText:'DT'},
+      {id:3,name:'Jeera Rice',desc:'Fragrant rice with cumin',price:90,discount:0,imgText:'JR'},
+      {id:4,name:'Veg Biryani',desc:'Aromatic rice with mixed vegetables',price:260,discount:15,imgText:'VB'},
+      {id:5,name:'Masala Dosa',desc:'Crispy dosa with potato masala',price:120,discount:5,imgText:'MD'},
+      {id:6,name:'Gulab Jamun (2 pcs)',desc:'Sweet syrupy dessert',price:60,discount:0,imgText:'GJ'}
+    ];
 
-    const cartIcon = document.querySelector(".cart-icon");
-    const cartModal = document.getElementById("cartModal");
-    const cartItemsDiv = document.getElementById("cartItems");
-    const cartCount = document.querySelector(".cart-count");
-    let cart = [];
+    // State
+    const cart = {}; // id -> {item, qty}
 
-    document.querySelectorAll(".add-to-cart").forEach((btn, index) => {
-      btn.onclick = () => {
-        const itemName = btn.previousElementSibling.previousElementSibling.previousElementSibling.textContent;
-        const existing = cart.find(i => i.name === itemName);
-        if (existing) {
-          existing.qty++;
-        } else {
-          cart.push({ name: itemName, qty: 1 });
-        }
-        updateCart();
-      };
-    });
+    const menuGrid = document.getElementById('menuGrid');
+    const galleryGrid = document.getElementById('galleryGrid');
+    const cartCount = document.getElementById('cartCount');
+    const cartToggle = document.getElementById('cartToggle');
+    const cartModal = document.getElementById('cartModal');
+    const cartList = document.getElementById('cartList');
+    const cartTotal = document.getElementById('cartTotal');
+    const sidePanel = document.getElementById('sidePanel');
+    const hamburger = document.getElementById('hamburger');
+    const orderNowBtn = document.getElementById('orderNow');
+    const viewMenuBtn = document.getElementById('viewMenu');
 
-    function updateCart() {
-      cartItemsDiv.innerHTML = "";
-      cart.forEach(item => {
-        const div = document.createElement("div");
-        div.classList.add("cart-item");
-        div.innerHTML = `${item.name} (x${item.qty}) <button onclick="removeItem('${item.name}')">-</button>`;
-        cartItemsDiv.appendChild(div);
-      });
-      cartCount.textContent = cart.reduce((sum, i) => sum + i.qty, 0);
+    function formatPrice(n){return n.toFixed(0)}
+
+    function renderMenu(){
+      menuGrid.innerHTML = '';
+      menu.forEach(i=>{
+        const card = document.createElement('div'); card.className='card';
+        card.innerHTML = `<div class="thumb">${i.imgText}</div>
+          <div class="meta">
+            <div class="title">${i.name}</div>
+            <div class="desc">${i.desc}</div>
+            <div class="price">₹${formatPrice(calculatePrice(i))}${i.discount? '<span class="orig">₹'+formatPrice(i.price)+'</span>':''}</div>
+          </div>
+          <div class="actions">
+            <div id="action-${i.id}"></div>
+          </div>`;
+        menuGrid.appendChild(card);
+        renderAction(i.id);
+      })
     }
 
-    function removeItem(name) {
-      const item = cart.find(i => i.name === name);
-      if (item) {
-        item.qty--;
-        if (item.qty <= 0) cart = cart.filter(i => i.name !== name);
-        updateCart();
+    function calculatePrice(item){
+      if(!item.discount) return item.price;
+      return Math.round(item.price * (1 - item.discount/100));
+    }
+
+    function renderAction(id){
+      const holder = document.getElementById('action-'+id);
+      holder.innerHTML='';
+      if(cart[id]){
+        // show qty control
+        const wrap = document.createElement('div'); wrap.className='qty-control';
+        const minus = document.createElement('button'); minus.textContent='−'; minus.onclick = ()=>changeQty(id, -1);
+        const qty = document.createElement('span'); qty.textContent = cart[id].qty;
+        const plus = document.createElement('button'); plus.textContent='+'; plus.onclick = ()=>changeQty(id, +1);
+        wrap.appendChild(minus); wrap.appendChild(qty); wrap.appendChild(plus);
+        holder.appendChild(wrap);
+      } else {
+        const btn = document.createElement('button'); btn.className='add-btn'; btn.textContent='Add to cart'; btn.onclick = ()=>addToCart(id);
+        holder.appendChild(btn);
       }
     }
 
-    cartIcon.onclick = () => {
-      cartModal.style.display = "flex";
-    };
-
-    function closeCart() {
-      cartModal.style.display = "none";
+    function addToCart(id){
+      const item = menu.find(x=>x.id===id);
+      if(!cart[id]) cart[id] = {item:item, qty:1};
+      else cart[id].qty++;
+      updateCartUI(); renderAction(id);
     }
+    function changeQty(id, delta){
+      if(!cart[id]) return;
+      cart[id].qty += delta;
+      if(cart[id].qty <= 0) { delete cart[id]; }
+      updateCartUI(); renderAction(id);
+    }
+
+    function updateCartUI(){
+      const ids = Object.keys(cart);
+      const totalCount = ids.reduce((s,k)=>s+cart[k].qty,0);
+      if(totalCount>0){ cartCount.style.display='inline-block'; cartCount.textContent=totalCount;} else {cartCount.style.display='none'}
+
+      // update cart list
+      cartList.innerHTML='';
+      let total = 0;
+      ids.forEach(k=>{
+        const {item, qty} = cart[k];
+        const unit = calculatePrice(item);
+        total += unit * qty;
+        const row = document.createElement('div'); row.className='cart-item';
+        row.innerHTML = `<div style="width:56px;height:56px;border-radius:10px;background:#082631;display:flex;align-items:center;justify-content:center">${item.imgText}</div>
+          <div style="flex:1">
+            <div style="font-weight:700">${item.name}</div>
+            <div style="color:var(--muted);font-size:13px">₹${unit} × ${qty} <span style="margin-left:8px;color:var(--muted);text-decoration:line-through">${item.discount? '₹'+item.price : ''}</span></div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:800">₹${unit*qty}</div>
+            <div style="margin-top:8px">
+              <button class="qty-s" data-id="${item.id}" data-op="-">−</button>
+              <span style="display:inline-block;width:22px;text-align:center">${qty}</span>
+              <button class="qty-s" data-id="${item.id}" data-op="+">+</button>
+            </div>
+          </div>`;
+        cartList.appendChild(row);
+      })
+      total += (Object.keys(cart).length?25:0);
+      cartTotal.textContent = formatPrice(total);
+
+      // wire up small qty buttons
+      Array.from(document.querySelectorAll('.qty-s')).forEach(b=>{
+        b.onclick = (e)=>{
+          const id = Number(b.dataset.id);
+          const op = b.dataset.op;
+          if(op=='-') changeQty(id,-1); else changeQty(id,1);
+        }
+      })
+    }
+
+    // Cart modal toggles
+    cartToggle.addEventListener('click', ()=>{
+      cartModal.classList.toggle('open');
+    });
+    document.getElementById('closeCart').addEventListener('click', ()=> cartModal.classList.remove('open'));
+    document.getElementById('checkoutBtn').addEventListener('click', ()=>{
+      if(Object.keys(cart).length===0){ alert('Cart is empty. Add items first.'); return }
+      alert('Proceeding to checkout — this is a demo.');
+    })
+
+    // Hamburger / side panel
+    hamburger.addEventListener('click', ()=>{
+      sidePanel.classList.toggle('open');
+      document.getElementById('dash1').classList.toggle('active');
+    });
+
+    // Side links should scroll to anchors
+    Array.from(document.querySelectorAll('.side-link')).forEach(a=>{
+      a.addEventListener('click', (e)=>{
+        e.preventDefault(); sidePanel.classList.remove('open');
+        const target = document.querySelector(a.getAttribute('href'));
+        if(target) target.scrollIntoView({behavior:'smooth', block:'center'});
+      })
+    })
+
+    // hero CTA links
+    orderNowBtn.addEventListener('click', ()=>{
+      document.querySelector('#menu').scrollIntoView({behavior:'smooth', block:'start'});
+    })
+    viewMenuBtn.addEventListener('click', ()=>{
+      document.querySelector('#menu').scrollIntoView({behavior:'smooth', block:'start'});
+    })
+
+    // gallery placeholders
+    function renderGallery(){
+      galleryGrid.innerHTML='';
+      for(let i=1;i<=6;i++){
+        const p = document.createElement('div'); p.className='photo';
+        // use SVG data url placeholder
+        const svg = `data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='800' height='600'><rect width='100%' height='100%' fill='%23082b35'/><text x='50%' y='50%' fill='%23bbf0ff' font-size='36' text-anchor='middle' dominant-baseline='middle'>Dish ${i}</text></svg>`)}`;
+        const img = document.createElement('img'); img.src = svg; img.alt = 'Dish '+i;
+        p.appendChild(img);
+        galleryGrid.appendChild(p);
+      }
+    }
+
+    // initial render
+    renderMenu(); renderGallery(); updateCartUI();
+
+    // small accessibility: close side panel when clicking outside
+    document.addEventListener('click', (e)=>{
+      if(!sidePanel.contains(e.target) && !hamburger.contains(e.target)){
+        sidePanel.classList.remove('open');
+      }
+    })
+
+    // keyboard shortcuts
+    document.addEventListener('keydown',(e)=>{ if(e.key==='Escape'){ sidePanel.classList.remove('open'); cartModal.classList.remove('open'); } })
+
+    // WhatsApp button link
+    document.getElementById('whatsapp').addEventListener('click',(e)=>{ e.preventDefault(); window.open('https://wa.me/919123456789?text='+encodeURIComponent('Hi Kavya Rasoin! I want to place an order.'),'_blank') })
+
   </script>
 </body>
 </html>
